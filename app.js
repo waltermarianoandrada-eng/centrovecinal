@@ -2290,7 +2290,6 @@ function generateGeneralReportPDF() {
             return category;
         };
         
-        const catColors = {
         const categoryEmojis = {
             "luminaria": "💡",
             "bache": "🕳️",
