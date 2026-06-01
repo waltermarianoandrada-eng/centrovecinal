@@ -676,7 +676,9 @@ function renderMapSVG() {
         "bache": "🕳️",
         "agua": "💧",
         "basura": "🗑️",
-        "tension": "⚡"
+        "tension": "⚡",
+        "escombros": "🚧",
+        "autos": "🚗"
     };
 
     database.reclamos.forEach(rec => {
@@ -1577,7 +1579,9 @@ function getMapImageCanvas(reportOrCategory, callback) {
             "bache": "🕳️",
             "agua": "💧",
             "basura": "🗑️",
-            "tension": "⚡"
+            "tension": "⚡",
+            "escombros": "🚧",
+            "autos": "🚗"
         };
         
         // Determinar categoría para filtrar
@@ -1637,6 +1641,21 @@ function getMapImageCanvas(reportOrCategory, callback) {
 }
 
 // GENERACIÓN DE NOTA EN PDF (jsPDF)
+// Genera una imagen PNG en base64 de un emoji dibujándolo en un canvas dinámico
+function getEmojiImage(emoji) {
+    const canvas = document.createElement("canvas");
+    canvas.width = 32;
+    canvas.height = 32;
+    const ctx = canvas.getContext("2d");
+    // Dibujar fondo transparente
+    ctx.clearRect(0, 0, 32, 32);
+    ctx.font = "22px Arial";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(emoji, 16, 16);
+    return canvas.toDataURL("image/png");
+}
+
 function generateOfficialPDF(reportId) {
     const report = database.reclamos.find(r => r.id === reportId);
     if (!report) {
@@ -2272,13 +2291,14 @@ function generateGeneralReportPDF() {
         };
         
         const catColors = {
-            "luminaria": { r: 239, g: 68, b: 68 },   // Rojo
-            "bache": { r: 245, g: 158, b: 11 },     // Naranja
-            "agua": { r: 59, g: 130, b: 246 },       // Azul
-            "basura": { r: 16, g: 185, b: 129 },     // Verde
-            "tension": { r: 139, g: 92, b: 246 },    // Violeta
-            "escombros": { r: 100, g: 116, b: 139 },  // Gris
-            "autos": { r: 51, g: 65, b: 85 }         // Slate
+        const categoryEmojis = {
+            "luminaria": "💡",
+            "bache": "🕳️",
+            "agua": "💧",
+            "basura": "🗑️",
+            "tension": "⚡",
+            "escombros": "🚧",
+            "autos": "🚗"
         };
         
         filteredClaims.forEach(r => {
@@ -2289,7 +2309,7 @@ function generateGeneralReportPDF() {
             }
             doc.text(r.id, marginX, currentY);
             
-            // Determinar color de la categoría
+            // Determinar emoji de la categoría
             const cleanCat = String(r.category).toLowerCase();
             let catKey = "agua";
             if (cleanCat.includes("lumi")) catKey = "luminaria";
@@ -2300,16 +2320,16 @@ function generateGeneralReportPDF() {
             else if (cleanCat.includes("escombro")) catKey = "escombros";
             else if (cleanCat.includes("auto")) catKey = "autos";
             
-            const color = catColors[catKey] || { r: 100, g: 116, b: 139 };
+            const emoji = categoryEmojis[catKey] || "❓";
+            const emojiImg = getEmojiImage(emoji);
             
-            // Dibujar círculo indicador
-            doc.setFillColor(color.r, color.g, color.b);
-            doc.circle(marginX + 32, currentY - 1, 1.2, "F");
+            // Dibujar la imagen del emoji en el PDF
+            doc.addImage(emojiImg, 'PNG', marginX + 30, currentY - 3.8, 4.2, 4.2);
             
-            // Escribir el texto de la categoría
+            // Escribir el texto de la categoría al lado de la imagen del emoji
             doc.setTextColor(30, 41, 59);
             const cleanLabel = getCleanCategoryLabel(r.category);
-            doc.text(cleanLabel, marginX + 35, currentY);
+            doc.text(cleanLabel, marginX + 36, currentY);
             
             let loc = `Mz ${r.manzana || '-'}`;
             if (r.lote) loc += ` Lote ${r.lote}`;
