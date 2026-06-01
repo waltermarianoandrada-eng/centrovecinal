@@ -1742,13 +1742,14 @@ function generateOfficialPDF(reportId) {
         doc.setFont("Helvetica", "bold");
         doc.setFontSize(10.5);
         
-        let refCategory = report.category.toUpperCase();
-        if (report.category === "luminaria") refCategory = "FALLA DE ALUMBRADO PÚBLICO";
-        else if (report.category === "basura") refCategory = "MICROBASURAL Y RIESGO SANITARIO";
-        else if (report.category === "escombros") refCategory = "OBSTRUCCIÓN DE CALLE POR ESCOMBROS";
-        else if (report.category === "autos") refCategory = "VEHÍCULO ABANDONADO EN VÍA PÚBLICA";
-        else if (report.category === "agua") refCategory = "PÉRDIDA DE AGUA POTABLE Y REBOSE DE CLOACAS";
-        else if (report.category === "tension") refCategory = "RIESGO ELÉCTRICO Y CABLES DE ALTA TENSIÓN";
+        let refCategory = String(report.category).toLowerCase();
+        if (refCategory.includes("lumi")) refCategory = "FALLA DE ALUMBRADO PÚBLICO";
+        else if (refCategory.includes("basu")) refCategory = "MICROBASURAL Y RIESGO SANITARIO";
+        else if (refCategory.includes("escombro")) refCategory = "OBSTRUCCIÓN DE CALLE POR ESCOMBROS";
+        else if (refCategory.includes("auto")) refCategory = "VEHÍCULO ABANDONADO EN VÍA PÚBLICA";
+        else if (refCategory.includes("agua")) refCategory = "PÉRDIDA DE AGUA POTABLE Y REBOSE DE CLOACAS";
+        else if (refCategory.includes("tension")) refCategory = "RIESGO ELÉCTRICO Y CABLES DE ALTA TENSIÓN";
+        else refCategory = refCategory.toUpperCase();
         
         doc.text(`REF: RECLAMO FORMAL URGENTE POR ${refCategory}`, marginX, currentY);
         
@@ -2258,14 +2259,26 @@ function generateGeneralReportPDF() {
         doc.setFont("Helvetica", "normal");
         doc.setFontSize(8.5);
         
-        const catLabels = {
-            "luminaria": "Alumbrado/Luz",
-            "bache": "Bache/Calle",
-            "agua": "Pérdida Agua",
-            "basura": "Microbasural",
-            "tension": "EDELAR/Cables",
-            "escombros": "Escombros",
-            "autos": "Auto Aband."
+        const getCleanCategoryLabel = (category) => {
+            const clean = String(category).toLowerCase();
+            if (clean.includes("agua")) return "Pérdida Agua";
+            if (clean.includes("lumi") || clean.includes("alumb")) return "Alumbrado/Luz";
+            if (clean.includes("bache") || clean.includes("pozo")) return "Bache/Calle";
+            if (clean.includes("basu") || clean.includes("residu")) return "Microbasural";
+            if (clean.includes("tension") || clean.includes("cable")) return "EDELAR/Cables";
+            if (clean.includes("escombro") || clean.includes("obstruc")) return "Escombros";
+            if (clean.includes("auto") || clean.includes("chatarra")) return "Auto Aband.";
+            return category;
+        };
+        
+        const catColors = {
+            "luminaria": { r: 239, g: 68, b: 68 },   // Rojo
+            "bache": { r: 245, g: 158, b: 11 },     // Naranja
+            "agua": { r: 59, g: 130, b: 246 },       // Azul
+            "basura": { r: 16, g: 185, b: 129 },     // Verde
+            "tension": { r: 139, g: 92, b: 246 },    // Violeta
+            "escombros": { r: 100, g: 116, b: 139 },  // Gris
+            "autos": { r: 51, g: 65, b: 85 }         // Slate
         };
         
         filteredClaims.forEach(r => {
@@ -2275,7 +2288,28 @@ function generateGeneralReportPDF() {
                 currentY = 20;
             }
             doc.text(r.id, marginX, currentY);
-            doc.text(catLabels[r.category] || r.category, marginX + 30, currentY);
+            
+            // Determinar color de la categoría
+            const cleanCat = String(r.category).toLowerCase();
+            let catKey = "agua";
+            if (cleanCat.includes("lumi")) catKey = "luminaria";
+            else if (cleanCat.includes("bache")) catKey = "bache";
+            else if (cleanCat.includes("agua")) catKey = "agua";
+            else if (cleanCat.includes("basu")) catKey = "basura";
+            else if (cleanCat.includes("tension")) catKey = "tension";
+            else if (cleanCat.includes("escombro")) catKey = "escombros";
+            else if (cleanCat.includes("auto")) catKey = "autos";
+            
+            const color = catColors[catKey] || { r: 100, g: 116, b: 139 };
+            
+            // Dibujar círculo indicador
+            doc.setFillColor(color.r, color.g, color.b);
+            doc.circle(marginX + 32, currentY - 1, 1.2, "F");
+            
+            // Escribir el texto de la categoría
+            doc.setTextColor(30, 41, 59);
+            const cleanLabel = getCleanCategoryLabel(r.category);
+            doc.text(cleanLabel, marginX + 35, currentY);
             
             let loc = `Mz ${r.manzana || '-'}`;
             if (r.lote) loc += ` Lote ${r.lote}`;
