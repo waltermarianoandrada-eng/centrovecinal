@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Sistema de Gestión Territorial e Inteligencia Urbana del Centro Vecinal del Barrio Gobernador Juan Melis. Registro de censo, reporte de incidencias y control de alumbrado público en La Rioja Capital.">
+    <title>Centro Vecinal Barrio Gdor. Juan Melis - Inteligencia Urbana</title>
+    <!-- Google Fonts: Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css?v=2">
+    
+    <!-- PWA Manifest & Meta Tags -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+</head>
+<body>
+    <div class="app-container">
+        <!-- HEADER PRINCIPAL -->
+        <header class="app-header">
+            <div class="header-logo-title">
+                <div class="logo-circle">
+                    <i data-lucide="map-pin" class="logo-icon"></i>
+                </div>
+                <div>
+                    <h1>Barrio Gobernador Juan Melis</h1>
+                    <p class="subtitle">Centro Vecinal &bull; Sistema de Inteligencia Urbana</p>
+                </div>
+            </div>
+            
+            <div class="header-info">
+                <div class="live-clock" id="live-clock">
+                    <i data-lucide="clock" class="clock-icon"></i>
+                    <span id="current-time">Cargando fecha y hora...</span>
+                </div>
+                <!-- Selector de Modo de Interfaz -->
+                <div class="role-selector">
+                    <button class="role-btn active" id="btn-mode-neighbor" onclick="switchRole('neighbor')">
+                        <i data-lucide="user" class="btn-icon"></i>
+                        <span>Portal del Vecino</span>
+                    </button>
+                    <button class="role-btn" id="btn-mode-admin" onclick="switchRole('admin')">
+                        <i data-lucide="shield-check" class="btn-icon"></i>
+                        <span>Panel del Administrador</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- CONTENIDO PRINCIPAL -->
+        <main class="app-main">
+            <!-- SECCIÓN IZQUIERDA: FORMULARIOS (DINÁMICA SEGÚN ROL) -->
+            <section class="side-panel" id="side-panel">
+                
+                <!-- ROL: VECINO -->
+                <div class="role-panel active" id="panel-neighbor">
+                    <!-- Tarjeta Informativa de Censo / Relevamiento Vecinal Directo -->
+                    <div class="glass-card">
+                        <div class="card-header">
+                            <div class="card-icon-container bg-blue">
+                                <i data-lucide="map-pinned" class="card-icon"></i>
+                            </div>
+                            <div>
+                                <h2>Relevamiento Censal</h2>
+                                <p class="card-subtitle">Cargue o actualice la información de su parcela</p>
+                            </div>
+                        </div>
+                        <form id="census-direct-form" onsubmit="handleCensusDirectSubmit(event)">
+                            <div class="form-grid">
+                                <div class="form-row-2">
+                                    <div class="form-group">
+                                        <label for="census-manzana">Manzana</label>
+                                        <select id="census-manzana" required>
+                                            <option value="">Seleccionar...</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="census-lote">Número de Lote</label>
+                                        <input type="text" id="census-lote" placeholder="Ej: 5" required style="padding: 10px; width: 100%;">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="census-name">Nombre del Vecino</label>
+                                    <input type="text" id="census-name" placeholder="Ej: Juan Pérez" required>
+                                </div>
+                                <div class="form-row-2">
+                                    <div class="form-group">
+                                        <label for="census-dni">D.N.I.</label>
+                                        <input type="text" id="census-dni" placeholder="Ej: 35.123.456" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="census-phone">WhatsApp / Teléfono</label>
+                                        <input type="tel" id="census-phone" placeholder="3804-556677" required>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="section-label">Vulnerabilidades de Atención Prioritaria</label>
+                                    <div class="checkbox-options">
+                                        <label class="custom-checkbox">
+                                            <input type="checkbox" id="census-elderly">
+                                            <span class="checkmark"></span>
+                                            <span>Adulto Mayor (60+)</span>
+                                        </label>
+                                        <label class="custom-checkbox">
+                                            <input type="checkbox" id="census-children">
+                                            <span class="checkmark"></span>
+                                            <span>Niños menores (12)</span>
+                                        </label>
+                                        <label class="custom-checkbox">
+                                            <input type="checkbox" id="census-disability">
+                                            <span class="checkmark"></span>
+                                            <span>Discapacidad / Movilidad reducida</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="submit" class="submit-btn bg-blue">
+                                <i data-lucide="save" class="btn-icon"></i>
+                                <span>Guardar Relevamiento</span>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Tarjeta 2: Registro de Reclamos -->
+                    <div class="glass-card">
+                        <div class="card-header">
+                            <div class="card-icon-container bg-amber">
+                                <i data-lucide="alert-triangle" class="card-icon"></i>
+                            </div>
+                            <div>
+                                <h2>Reporte de Reclamo Ciudadano</h2>
+                                <p class="card-subtitle">Reporte incidencias viales u obras defectuosas</p>
+                            </div>
+                        </div>
+                        <form id="report-form" onsubmit="handleReportSubmit(event)">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="report-neighbor">Vecino Informante (Censado)</label>
+                                    <select id="report-neighbor" required onchange="handleReportNeighborChange()">
+                                        <option value="">Seleccione vecino registrado...</option>
+                                        <!-- Se llena dinámicamente -->
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="report-category">Tipo de Incidencia</label>
+                                    <select id="report-category" required onchange="handleReportCategoryChange()">
+                                        <option value="">Seleccionar categoría...</option>
+                                        <option value="luminaria">🔴 Falla de Alumbrado Público (Luminaria apagada)</option>
+                                        <option value="bache">🔴 Bache / Pozo en la calzada</option>
+                                        <option value="escombros">Obstáculo: Escombros o Material de Obra</option>
+                                        <option value="basura">Residuos: Basura en Espacios Verdes / Microbasurales</option>
+                                        <option value="autos">Tránsito: Auto Abandonado o Chatarra en vía pública</option>
+                                        <option value="agua">Servicios: Pérdida de Agua o Cloaca</option>
+                                        <option value="tension">EDELAR: Cables sueltos / Alta Tensión</option>
+                                    </select>
+                                </div>
+                                
+                                <!-- Campos dinámicos para luminaria -->
+                                <div id="group-luminaria-select" class="form-group hidden">
+                                    <label for="report-luminaria-id">Seleccionar Poste de Luz en el Mapa o Lista</label>
+                                    <select id="report-luminaria-id">
+                                        <option value="">Seleccione luminaria...</option>
+                                        <!-- Se llena dinámicamente -->
+                                    </select>
+                                </div>
+
+                                <!-- Campos dinámicos para ubicación física (si no es luminaria) -->
+                                <div id="group-location-manual" class="form-group">
+                                    <div class="form-row-2">
+                                        <div class="form-group">
+                                            <label for="report-manzana">Manzana (Afectada)</label>
+                                            <select id="report-manzana" onchange="updateLotesDropdown('report-manzana', 'report-lote')">
+                                                <option value="">Seleccionar...</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="report-lote">Lote (Afectado)</label>
+                                            <select id="report-lote">
+                                                <option value="">Primero elija Manzana</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group" style="margin-top: 12px;">
+                                        <label for="report-street">Calle Afectada (Plano 2)</label>
+                                        <select id="report-street">
+                                            <option value="">Seleccionar calle...</option>
+                                            <option value="Dardo Rocha">Dardo Rocha</option>
+                                            <option value="Artemio Moreno">Artemio Moreno</option>
+                                            <option value="Mármol">Mármol</option>
+                                            <option value="Grl. Paz">Grl. Paz</option>
+                                            <option value="Ascasubi">Ascasubi</option>
+                                            <option value="Chamical">Chamical</option>
+                                            <option value="Tudcum">Tudcum</option>
+                                            <option value="Portezuelo">Portezuelo</option>
+                                            <option value="Cesar Carrizo">Cesar Carrizo</option>
+                                            <option value="Calle S/N">Calle S/N</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="report-description">Detalle o Descripción del Problema</label>
+                                    <textarea id="report-description" rows="3" required placeholder="Escriba aquí los detalles de la incidencia..."></textarea>
+                                </div>
+                            </div>
+                            <button type="submit" class="submit-btn bg-amber">
+                                <i data-lucide="send" class="btn-icon"></i>
+                                <span>Enviar Reporte Oficial</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- ROL: ADMINISTRADOR -->
+                <div class="role-panel" id="panel-admin">
+                    <!-- Tarjeta de Estadísticas Administrativas -->
+                    <div class="glass-card">
+                        <div class="card-header">
+                            <div class="card-icon-container bg-emerald">
+                                <i data-lucide="bar-chart-3" class="card-icon"></i>
+                            </div>
+                            <div>
+                                <h2>Tablero de Control</h2>
+                                <p class="card-subtitle">Auditoría territorial del Centro Vecinal</p>
+                            </div>
+                        </div>
+                        
+                        <div class="stats-grid">
+                            <div class="stat-box">
+                                <span class="stat-val" id="stat-census-total">0</span>
+                                <span class="stat-lbl">Vecinos Censados</span>
+                            </div>
+                            <div class="stat-box">
+                                <span class="stat-val status-danger" id="stat-claims-active">0</span>
+                                <span class="stat-lbl">Reclamos Activos</span>
+                            </div>
+                            <div class="stat-box">
+                                <span class="stat-val status-warning" id="stat-lums-off">0</span>
+                                <span class="stat-lbl">Luminarias Rotas</span>
+                            </div>
+                            <div class="stat-box">
+                                <span class="stat-val status-info" id="stat-priority-total">0</span>
+                                <span class="stat-lbl">Casos Prioritarios</span>
+                            </div>
+                        </div>
+
+                        <div class="stats-priority-breakdown">
+                            <div class="priority-badge-row">
+                                <span class="p-badge elderly"><i data-lucide="heart" class="p-icon"></i> Mayores: <strong id="stat-priority-elderly">0</strong></span>
+                                <span class="p-badge children"><i data-lucide="smile" class="p-icon"></i> Niños: <strong id="stat-priority-children">0</strong></span>
+                                <span class="p-badge disability"><i data-lucide="accessibility" class="p-icon"></i> Discap.: <strong id="stat-priority-disability">0</strong></span>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!-- Tarjeta del Listado de Relevamiento Censal (Admin) -->
+                    <div class="glass-card table-card">
+                        <div class="card-header">
+                            <div class="card-icon-container bg-blue">
+                                <i data-lucide="users" class="card-icon"></i>
+                            </div>
+                            <div>
+                                <h2>Relevamiento Censal Registrado</h2>
+                                <p class="card-subtitle">Listado de vecinos registrados en el barrio</p>
+                            </div>
+                        </div>
+                        <div class="table-container" style="max-height: 250px;">
+                            <table class="claims-table">
+                                <thead>
+                                    <tr>
+                                        <th>Ubicación</th>
+                                        <th>Nombre</th>
+                                        <th>D.N.I.</th>
+                                        <th>WhatsApp</th>
+                                        <th>Acción</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="census-table-body">
+                                    <!-- Se llena dinámicamente -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta del Listado de Reclamos y Notas Oficiales -->
+                    <div class="glass-card table-card">
+                        <div class="card-header header-with-actions">
+                            <div class="card-title-group">
+                                <h2>Gestión de Incidencias</h2>
+                                <p class="card-subtitle">Filtre y genere notas en PDF</p>
+                            </div>
+                            <div class="filter-actions" style="display: flex; gap: 8px;">
+                                <select id="filter-claims-category" onchange="renderClaimsTable()">
+                                    <option value="all">Todas las categorías</option>
+                                    <option value="luminaria">Alumbrado Público</option>
+                                    <option value="escombros">Escombros</option>
+                                    <option value="basura">Basura/Microbasurales</option>
+                                    <option value="autos">Autos Abandonados</option>
+                                    <option value="agua">Pérdidas de Agua</option>
+                                    <option value="tension">EDELAR</option>
+                                </select>
+                                <button class="pdf-btn bg-emerald" onclick="generateGeneralReportPDF()" style="background: var(--color-emerald-bg); border-color: rgba(16,185,129,0.3); color: #34d399; font-weight: 600; display: flex; align-items: center; gap: 6px;" title="Exportar Mapa e Incidencias">
+                                    <i data-lucide="file-text" style="width: 14px; height: 14px;"></i>
+                                    <span>Exportar Todo</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="table-container">
+                            <table class="claims-table">
+                                <thead>
+                                    <tr>
+                                        <th>Fecha</th>
+                                        <th>Ubicación</th>
+                                        <th>Categoría</th>
+                                        <th>Afectados</th>
+                                        <th>Acción</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="claims-table-body">
+                                    <!-- Se llena dinámicamente -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- SECCIÓN DERECHA: MAPA INTERACTIVO -->
+            <section class="map-panel">
+                <div class="glass-card map-card">
+                    <div class="map-card-header">
+                        <div class="map-title">
+                            <i data-lucide="map" class="map-header-icon"></i>
+                            <div>
+                                <h2>Plano 1: Catastro de Lotes y Alumbrado Público</h2>
+                                <p class="card-subtitle" id="map-hint-label">Seleccione una herramienta abajo y haga clic en el plano para marcar un incidente (bache, pérdida de agua, basura, cables o luminaria quemada).</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Barra de herramientas para reportar incidentes directamente en el plano -->
+                    <div class="incident-toolbar" id="incident-toolbar-el" style="display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; align-items: center;">
+                        <span style="font-size: 0.8rem; font-weight: 600; text-transform: uppercase; color: var(--text-secondary); display: flex; align-items: center; margin-right: 4px;">Marcar Incidente:</span>
+                        <button class="tool-btn" id="tool-luminaria" onclick="selectIncidentTool('luminaria')" style="display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); background: rgba(255,255,255,0.03); color: var(--text-primary); cursor: pointer; font-size: 0.8rem; font-weight: 600; transition: var(--transition-fast);">
+                            <span>🔴 Luz Quemada</span>
+                        </button>
+                        <button class="tool-btn" id="tool-bache" onclick="selectIncidentTool('bache')" style="display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); background: rgba(255,255,255,0.03); color: var(--text-primary); cursor: pointer; font-size: 0.8rem; font-weight: 600; transition: var(--transition-fast);">
+                            <span>🕳️ Bache / Olla</span>
+                        </button>
+                        <button class="tool-btn" id="tool-agua" onclick="selectIncidentTool('agua')" style="display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); background: rgba(255,255,255,0.03); color: var(--text-primary); cursor: pointer; font-size: 0.8rem; font-weight: 600; transition: var(--transition-fast);">
+                            <span>💧 Pérdida de Agua</span>
+                        </button>
+                        <button class="tool-btn" id="tool-basura" onclick="selectIncidentTool('basura')" style="display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); background: rgba(255,255,255,0.03); color: var(--text-primary); cursor: pointer; font-size: 0.8rem; font-weight: 600; transition: var(--transition-fast);">
+                            <span>🗑️ Microbasural</span>
+                        </button>
+                        <button class="tool-btn" id="tool-tension" onclick="selectIncidentTool('tension')" style="display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); background: rgba(255,255,255,0.03); color: var(--text-primary); cursor: pointer; font-size: 0.8rem; font-weight: 600; transition: var(--transition-fast);">
+                            <span>⚡ Cables / EDELAR</span>
+                        </button>
+                    </div>
+
+                    <div class="map-legend-row" style="margin-bottom: 12px;">
+                        <div class="map-legend">
+                            <!-- Incidentes -->
+                            <div class="legend-item"><span style="color: #ef4444; font-size: 1.1rem; line-height: 1; vertical-align: middle;">🔴</span><span>Luz Quemada</span></div>
+                            <div class="legend-item"><span>🕳️</span><span>Bache</span></div>
+                            <div class="legend-item"><span>💧</span><span>Agua</span></div>
+                            <div class="legend-item"><span>🗑️</span><span>Basura</span></div>
+                            <div class="legend-item"><span>⚡</span><span>EDELAR</span></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Contenedor del Mapa SVG -->
+                    <div class="map-view-container" id="map-view-container-el">
+                        <!-- Plano 1: Catastro Satelital de Lotes y Manzanas (Delimitado al recuadro rojo) -->
+                        <div class="svg-wrapper" id="map-svg-wrapper">
+                            <!-- SVG renderizado dinámicamente -->
+                        </div>
+                    </div>
+
+                    <!-- Panel de control de Luminaria o Manzana seleccionada (Flotante) -->
+                    <div class="map-floating-panel hidden" id="luminaire-detail-panel">
+                        <div class="floating-header">
+                            <h3 id="float-lum-id">LUM-XXXX-00</h3>
+                            <button class="close-float-btn" onclick="closeLuminaireFloat()"><i data-lucide="x"></i></button>
+                        </div>
+                        <div class="floating-body">
+                            <p><strong>Ubicación:</strong> <span id="float-lum-street">-</span></p>
+                            <p><strong>Estado:</strong> <span id="float-lum-status" class="status-badge">-</span></p>
+                            <p><strong>Vecinos Afectados:</strong> <span id="float-lum-affected">-</span></p>
+                            <div id="float-lum-active-report" class="hidden">
+                                <hr>
+                                <p><strong>Detalle del Reporte:</strong></p>
+                                <div class="report-bubble" id="float-lum-report-desc">-</div>
+                            </div>
+                            <div class="floating-actions" id="float-actions-container">
+                                <!-- Botones de acción dinámicos -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- jsPDF Library (cargado de forma local client-side) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- Lucide Icons Library -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+
+    <!-- Modal para Ubicar Nueva Luminaria -->
+    <div class="modal-overlay hidden" id="modal-add-luminaire">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <i data-lucide="plus-circle" style="color: var(--color-blue); width: 22px; height: 22px;"></i>
+                    <h2 style="font-size: 1.15rem; font-weight: 600;">Ubicar Nueva Luminaria</h2>
+                </div>
+                <button class="close-modal-btn" onclick="closeAddLuminaireModal()"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-hint" style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 16px;">
+                    Establezca los datos del poste en las coordenadas seleccionadas sobre el plano de catastro.
+                </p>
+                <div class="form-grid">
+                    <div class="form-row-2">
+                        <div class="form-group">
+                            <label>Coordenada X</label>
+                            <input type="text" id="new-lum-x" readonly style="background: rgba(0,0,0,0.25); color: var(--text-secondary);">
+                        </div>
+                        <div class="form-group">
+                            <label>Coordenada Y</label>
+                            <input type="text" id="new-lum-y" readonly style="background: rgba(0,0,0,0.25); color: var(--text-secondary);">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="new-lum-id">ID Único del Poste</label>
+                        <input type="text" id="new-lum-id" placeholder="Ej: LUM-GPAZ-03" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="new-lum-street">Calle donde se sitúa</label>
+                        <select id="new-lum-street" required>
+                            <option value="">Seleccionar calle...</option>
+                            <option value="Dardo Rocha">Dardo Rocha</option>
+                            <option value="Artemio Moreno">Artemio Moreno</option>
+                            <option value="Mármol">Mármol</option>
+                            <option value="Grl. Paz">Grl. Paz</option>
+                            <option value="Ascasubi">Ascasubi</option>
+                            <option value="Chamical">Chamical</option>
+                            <option value="Tudcum">Tudcum</option>
+                            <option value="Portezuelo">Portezuelo</option>
+                            <option value="Cesar Carrizo">Cesar Carrizo</option>
+                            <option value="Calle S/N">Calle S/N</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                <button class="submit-btn" style="background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); color: var(--text-secondary);" onclick="closeAddLuminaireModal()">Cancelar</button>
+                <button class="submit-btn bg-blue" onclick="saveNewLuminaire()">Guardar Luminaria</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Plano Base64 Data -->
+    <script src="plano_base64.js"></script>
+    <!-- Core Application Logic -->
+    <script src="app.js"></script>
+</body>
+</html>
