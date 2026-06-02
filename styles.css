@@ -1297,6 +1297,9 @@ textarea {
     .side-panel {
         max-height: none;
         overflow-y: visible;
+        max-width: 600px;
+        margin: 0 auto;
+        width: 100%;
     }
     
     .map-panel {
