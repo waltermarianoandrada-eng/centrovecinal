@@ -1,4 +1,4 @@
-const CACHE_NAME = 'cv-melis-v9';
+const CACHE_NAME = 'cv-melis-v10';
 const ASSETS = [
   './',
   './index.html',
