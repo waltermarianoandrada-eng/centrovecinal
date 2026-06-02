@@ -157,6 +157,8 @@
                                         <option value="autos">Tránsito: Auto Abandonado o Chatarra en vía pública</option>
                                         <option value="agua">Servicios: Pérdida de Agua o Cloaca</option>
                                         <option value="tension">EDELAR: Cables sueltos / Alta Tensión</option>
+                                        <option value="zanja">🔴 Calle Intransitable con Zanja</option>
+                                        <option value="baldio">🔴 Terreno Baldío con Malezas / Suciedad</option>
                                     </select>
                                 </div>
                                 
@@ -258,6 +260,38 @@
                         </div>
                     </div>
 
+                    <!-- Tarjeta: Frentistas por Manzana -->
+                    <div class="glass-card">
+                        <div class="card-header">
+                            <div class="card-icon-container bg-blue">
+                                <i data-lucide="map-pinned" class="card-icon"></i>
+                            </div>
+                            <div>
+                                <h2>Frentistas por Manzana</h2>
+                                <p class="card-subtitle">Censo de frentistas registrados y total por manzana</p>
+                            </div>
+                        </div>
+                        <div class="table-container" style="max-height: 250px; overflow-y: auto;">
+                            <table class="claims-table">
+                                <thead>
+                                    <tr>
+                                        <th>Manzana</th>
+                                        <th>Censados</th>
+                                        <th>Lotes</th>
+                                        <th>% Censo</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="manzanas-frentistas-body">
+                                    <!-- Se llena dinámicamente -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div style="margin-top: 12px; padding: 12px; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: var(--radius-sm); display: flex; justify-content: space-between; font-size: 0.95rem; font-weight: 700; color: #fff;">
+                            <span>Total Frentistas del Barrio:</span>
+                            <span id="barrio-frentistas-total">0</span>
+                        </div>
+                    </div>
+
 
                     <!-- Tarjeta del Listado de Relevamiento Censal (Admin) -->
                     <div class="glass-card table-card">
@@ -299,11 +333,14 @@
                                 <select id="filter-claims-category" onchange="renderClaimsTable()">
                                     <option value="all">Todas las categorías</option>
                                     <option value="luminaria">Alumbrado Público</option>
+                                    <option value="bache">Baches</option>
                                     <option value="escombros">Escombros</option>
                                     <option value="basura">Basura/Microbasurales</option>
                                     <option value="autos">Autos Abandonados</option>
                                     <option value="agua">Pérdidas de Agua</option>
                                     <option value="tension">EDELAR</option>
+                                    <option value="zanja">Calle c/ Zanja</option>
+                                    <option value="baldio">Terrenos Baldíos</option>
                                 </select>
                                 <button class="pdf-btn bg-emerald" onclick="generateGeneralReportPDF()" style="background: var(--color-emerald-bg); border-color: rgba(16,185,129,0.3); color: #34d399; font-weight: 600; display: flex; align-items: center; gap: 6px;" title="Exportar Mapa e Incidencias">
                                     <i data-lucide="file-text" style="width: 14px; height: 14px;"></i>
@@ -364,6 +401,18 @@
                         <button class="tool-btn" id="tool-tension" onclick="selectIncidentTool('tension')" style="display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); background: rgba(255,255,255,0.03); color: var(--text-primary); cursor: pointer; font-size: 0.8rem; font-weight: 600; transition: var(--transition-fast);">
                             <span>⚡ Cables / EDELAR</span>
                         </button>
+                        <button class="tool-btn" id="tool-escombros" onclick="selectIncidentTool('escombros')" style="display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); background: rgba(255,255,255,0.03); color: var(--text-primary); cursor: pointer; font-size: 0.8rem; font-weight: 600; transition: var(--transition-fast);">
+                            <span>🧱 Escombros / Obra</span>
+                        </button>
+                        <button class="tool-btn" id="tool-autos" onclick="selectIncidentTool('autos')" style="display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); background: rgba(255,255,255,0.03); color: var(--text-primary); cursor: pointer; font-size: 0.8rem; font-weight: 600; transition: var(--transition-fast);">
+                            <span>🚗 Auto Abandonado</span>
+                        </button>
+                        <button class="tool-btn" id="tool-zanja" onclick="selectIncidentTool('zanja')" style="display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); background: rgba(255,255,255,0.03); color: var(--text-primary); cursor: pointer; font-size: 0.8rem; font-weight: 600; transition: var(--transition-fast);">
+                            <span>🚧 Calle c/ Zanja</span>
+                        </button>
+                        <button class="tool-btn" id="tool-baldio" onclick="selectIncidentTool('baldio')" style="display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); background: rgba(255,255,255,0.03); color: var(--text-primary); cursor: pointer; font-size: 0.8rem; font-weight: 600; transition: var(--transition-fast);">
+                            <span>🌾 Lote Baldío</span>
+                        </button>
                     </div>
 
                     <div class="map-legend-row" style="margin-bottom: 12px;">
@@ -374,6 +423,10 @@
                             <div class="legend-item"><span>💧</span><span>Agua</span></div>
                             <div class="legend-item"><span>🗑️</span><span>Basura</span></div>
                             <div class="legend-item"><span>⚡</span><span>EDELAR</span></div>
+                            <div class="legend-item"><span>🧱</span><span>Escombros</span></div>
+                            <div class="legend-item"><span>🚗</span><span>Auto Aband.</span></div>
+                            <div class="legend-item"><span>🚧</span><span>Calle c/ Zanja</span></div>
+                            <div class="legend-item"><span>🌾</span><span>Lote Baldío</span></div>
                         </div>
                     </div>
                     

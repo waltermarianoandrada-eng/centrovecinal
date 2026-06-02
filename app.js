@@ -5,18 +5,18 @@
 const MANZANAS_DATA = {
     "A": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"],
     "B": [], // Área comunitaria
-    "C": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17"],
-    "D": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31"],
-    "E": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28"],
+    "C": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16"],
+    "D": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34"],
+    "E": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29"],
     "F": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27"],
     "G": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16"],
     "N": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30"],
     "H": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28"],
-    "I": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"],
+    "I": ["1", "2", "3", "4", "5", "6", "7", "8", "9"],
     "J": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20"],
     "K": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24"],
-    "L": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11"],
-    "M": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33"]
+    "L": ["1", "2", "3", "4", "5", "6", "7", "8", "9"],
+    "M": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32"]
 };
 
 // Base de Datos de Lotes Baldíos (se pintan de azul en el plano)
@@ -677,8 +677,10 @@ function renderMapSVG() {
         "agua": "💧",
         "basura": "🗑️",
         "tension": "⚡",
-        "escombros": "🚧",
-        "autos": "🚗"
+        "escombros": "🧱",
+        "autos": "🚗",
+        "zanja": "🚧",
+        "baldio": "🌾"
     };
 
     database.reclamos.forEach(rec => {
@@ -740,7 +742,11 @@ function handleMapClick(event) {
                 "bache": "Bache / Pozo en la calzada",
                 "agua": "Pérdida de agua corriente",
                 "basura": "Acumulación de residuos / microbasural",
-                "tension": "Cables sueltos o riesgo eléctrico"
+                "tension": "Cables sueltos o riesgo eléctrico",
+                "escombros": "Escombros o Material de Obra en vía pública",
+                "autos": "Auto abandonado o Chatarra en vía pública",
+                "zanja": "Calle intransitable con zanja",
+                "baldio": "Terreno Baldío con malezas o suciedad"
             };
             const label = catLabels[activeIncidentTool] || activeIncidentTool;
             
@@ -782,7 +788,11 @@ function handleMapClick(event) {
                 "bache": "Bache / Pozo en la calzada",
                 "agua": "Pérdida de agua corriente",
                 "basura": "Acumulación de residuos / microbasural",
-                "tension": "Cables sueltos o riesgo eléctrico"
+                "tension": "Cables sueltos o riesgo eléctrico",
+                "escombros": "Escombros o Material de Obra en vía pública",
+                "autos": "Auto abandonado o Chatarra en vía pública",
+                "zanja": "Calle intransitable con zanja",
+                "baldio": "Terreno Baldío con malezas o suciedad"
             };
             const label = catLabels[activeIncidentTool] || activeIncidentTool;
             document.getElementById("report-description").value = `${label} detectado en el plano de catastro.`;
@@ -1481,6 +1491,46 @@ function updateStats() {
     document.getElementById("stat-priority-elderly").textContent = elderlyCount;
     document.getElementById("stat-priority-children").textContent = childrenCount;
     document.getElementById("stat-priority-disability").textContent = disabilityCount;
+
+    // Calcular vecinos frentistas por manzana
+    const frentistasBody = document.getElementById("manzanas-frentistas-body");
+    if (frentistasBody) {
+        frentistasBody.innerHTML = "";
+        let barrioTotal = 0;
+        
+        // Las manzanas del barrio son A, B, C, D, E, F, G, H, I, J, K, L, M, N (14 manzanas)
+        const manzanasList = ["A", "B", "C", "D", "E", "F", "G", "N", "H", "I", "J", "K", "L", "M"];
+        
+        manzanasList.forEach(mz => {
+            const count = database.census.filter(v => v.manzana === mz).length;
+            const totalLots = MANZANAS_DATA[mz] ? MANZANAS_DATA[mz].length : 0;
+            
+            let percent = 0;
+            if (totalLots > 0) {
+                percent = Math.round((count / totalLots) * 100);
+            }
+            
+            barrioTotal += count;
+            
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td><strong>Mz ${mz}</strong> ${mz === "B" ? '<span style="font-size: 0.6rem; color: var(--text-secondary);">(Comun.)</span>' : ''}</td>
+                <td><strong>${count}</strong></td>
+                <td>${totalLots > 0 ? totalLots : '-'}</td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <span style="font-weight: 600; width: 30px; text-align: right;">${percent}%</span>
+                        <div style="flex: 1; height: 6px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden; min-width: 40px;">
+                            <div style="width: ${percent}%; height: 100%; background: ${percent > 70 ? 'var(--color-green)' : percent > 30 ? 'var(--color-amber)' : 'var(--color-blue)'}; border-radius: 3px;"></div>
+                        </div>
+                    </div>
+                </td>
+            `;
+            frentistasBody.appendChild(tr);
+        });
+        
+        document.getElementById("barrio-frentistas-total").textContent = "288 vecinos frentistas";
+    }
 }
 
 // Tabla de reportes
@@ -1521,7 +1571,9 @@ function renderClaimsTable() {
             "autos": { label: "Auto Aband.", class: "category-auto" },
             "agua": { label: "Pérdida Agua", class: "category-agua" },
             "bache": { label: "Bache", class: "category-esco" },
-            "tension": { label: "Alta Tensión", class: "category-lumi" }
+            "tension": { label: "Alta Tensión", class: "category-lumi" },
+            "zanja": { label: "Calle c/ Zanja", class: "category-esco" },
+            "baldio": { label: "Lote Baldío", class: "category-basu" }
         };
         const catInfo = catMap[r.category] || { label: "General", class: "" };
         
@@ -1580,8 +1632,10 @@ function getMapImageCanvas(reportOrCategory, callback) {
             "agua": "💧",
             "basura": "🗑️",
             "tension": "⚡",
-            "escombros": "🚧",
-            "autos": "🚗"
+            "escombros": "🧱",
+            "autos": "🚗",
+            "zanja": "🚧",
+            "baldio": "🌾"
         };
         
         // Determinar categoría para filtrar
@@ -1620,7 +1674,7 @@ function getMapImageCanvas(reportOrCategory, callback) {
                     ctx.fillRect(rec.x - 1.5, rec.y + 2.5, 3, 1);
                 } else {
                     const emoji = categoryEmojis[rec.category] || "❓";
-                    ctx.font = "20px Arial";
+                    ctx.font = "20px 'Segoe UI Emoji', 'Apple Color Emoji', Arial, sans-serif";
                     ctx.textAlign = "center";
                     ctx.textBaseline = "middle";
                     ctx.fillText(emoji, rec.x, rec.y);
@@ -2050,7 +2104,11 @@ function selectIncident(id) {
         "bache": "🕳️ Bache / Olla",
         "agua": "💧 Pérdida de Agua",
         "basura": "🗑️ Microbasural",
-        "tension": "⚡ EDELAR / Cables"
+        "tension": "⚡ EDELAR / Cables",
+        "escombros": "🧱 Escombros / Obra",
+        "autos": "🚗 Auto Abandonado",
+        "zanja": "🚧 Calle c/ Zanja",
+        "baldio": "🌾 Lote Baldío / Suciedad"
     };
     
     const statusLabel = document.getElementById("float-lum-status");
@@ -2238,7 +2296,9 @@ function generateGeneralReportPDF() {
             "basura": "INFORME DE MICROBASURALES Y RESIDUOS",
             "tension": "INFORME DE RIESGO ELÉCTRICO (EDELAR)",
             "escombros": "INFORME DE OBSTÁCULOS Y ESCOMBROS",
-            "autos": "INFORME DE VEHÍCULOS ABANDONADOS"
+            "autos": "INFORME DE VEHÍCULOS ABANDONADOS",
+            "zanja": "INFORME DE CALLES INTRANSITABLES Y ZANJAS",
+            "baldio": "INFORME DE LOTES BALDÍOS Y MALEZAS"
         };
         
         doc.text(catTitles[filterCat] || "INFORME DE INCIDENCIAS URBANAS", marginX, currentY);
@@ -2287,6 +2347,8 @@ function generateGeneralReportPDF() {
             if (clean.includes("tension") || clean.includes("cable")) return "EDELAR/Cables";
             if (clean.includes("escombro") || clean.includes("obstruc")) return "Escombros";
             if (clean.includes("auto") || clean.includes("chatarra")) return "Auto Aband.";
+            if (clean.includes("zanja") || clean.includes("intransitable")) return "Zanja/Calle";
+            if (clean.includes("baldio") || clean.includes("valdio")) return "Lote Baldío";
             return category;
         };
         
@@ -2296,8 +2358,10 @@ function generateGeneralReportPDF() {
             "agua": "💧",
             "basura": "🗑️",
             "tension": "⚡",
-            "escombros": "🚧",
-            "autos": "🚗"
+            "escombros": "🧱",
+            "autos": "🚗",
+            "zanja": "🚧",
+            "baldio": "🌾"
         };
         
         filteredClaims.forEach(r => {
@@ -2318,6 +2382,8 @@ function generateGeneralReportPDF() {
             else if (cleanCat.includes("tension")) catKey = "tension";
             else if (cleanCat.includes("escombro")) catKey = "escombros";
             else if (cleanCat.includes("auto")) catKey = "autos";
+            else if (cleanCat.includes("zanja") || cleanCat.includes("intransitable")) catKey = "zanja";
+            else if (cleanCat.includes("baldio") || cleanCat.includes("valdio")) catKey = "baldio";
             
             const emoji = categoryEmojis[catKey] || "❓";
             const emojiImg = getEmojiImage(emoji);
